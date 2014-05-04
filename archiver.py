@@ -2,23 +2,10 @@
 """ Store messages from the exchange in a mongodb.. db. """
 
 import json
-import pymongo
+import pprint
 import time
-import zmq
 
-
-def setup_zeromq():
-    connect_to = 'ipc:///var/tmp/wtf-node.zmq_socket'
-    ctx = zmq.Context()
-    s = ctx.socket(zmq.SUB)
-    s.connect(connect_to)
-    s.setsockopt(zmq.SUBSCRIBE, '')
-    return s
-
-
-def setup_mongo():
-    client = pymongo.MongoClient("localhost", 27017)
-    return client.bitcoin, client
+from common import setup_zeromq, setup_mongo
 
 
 def main():
@@ -33,6 +20,7 @@ def main():
             topic = msg.pop('topic')
             obj = getattr(db, topic).save(msg)
             print "Saved", obj
+            pprint.pprint(msg)
     except KeyboardInterrupt:
         pass
     print "Exiting."
